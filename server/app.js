@@ -13,7 +13,7 @@ const organizationsRouter = require('./routes/organizationsRoutes');
 app.use(express.json()); // permette di analizzare le richieste in arrivo con JSON payload
 
 // ROUTES
-app.use('/sendMessage', twilioRouter);
-app.use('/organizations', organizationsRouter);
+app.use('/api/sendMessage', twilioRouter);
+app.use('/api/organizations', organizationsRouter);
 
 module.exports = app;
