@@ -1,5 +1,10 @@
 const db = require('./../db');
 const upload = require('../utils/multer');
+const axios = require('axios');
+const pdfParse = require('pdf-parse');
+const mammoth = require('mammoth');
+const XLSX = require('xlsx');
+const Tesseract = require('tesseract.js');
 
 // funzione per aggiungere una nuova compagnia con i relativi documenti
 exports.newOrganization = [
@@ -51,10 +56,74 @@ exports.deleteDocument = async (req, res) => {
 
     if (deleted.rowCount == 0) {
       res.status(400).json({ message: 'Documento non trovato' });
+    } else {
+      res.status(200).json({ message: 'Documento eliminato con successo' });
     }
-
-    res.status(200).json({ message: 'Documento eliminato con successo' });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+// funzione per recuperare tutti i documenti di una compagnia
+exports.getDocuments = async (req, res) => {
+  const { organization_id } = req.params;
+
+  try {
+    // recupero i documenti dal db
+    const docs = await db.any(
+      `SELECT filename, file_url FROM organization_documents WHERE organization_id = $1`,
+      [organization_id],
+    );
+
+    if (docs.length == 0) {
+      res.status(404).json({ message: 'Nessun documento trovato' });
+    } else {
+      // res.status(200).json({ documents: docs });
+      for (const doc of docs) {
+        console.log(`Scarico e leggo: ${doc.file_url}`);
+        const response = await axios.get(doc.file_url, {
+          responseType: 'arraybuffer',
+        });
+
+        const mime = doc.mimetype;
+
+        if (mime === 'application/pdf') {
+          const pdfData = await pdfParse(response.data);
+          fullText += pdfData.text + '\n';
+        } else if (
+          mime ===
+          'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ) {
+          const result = await mammoth.extractRawText({
+            buffer: response.data,
+          });
+          fullText += result.value + '\n';
+        } else if (
+          mime ===
+          'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        ) {
+          const workbook = XLSX.read(response.data, { type: 'buffer' });
+          workbook.SheetNames.forEach((sheetName) => {
+            const worksheet = workbook.Sheets[sheetName];
+            const sheetText = XLSX.utils.sheet_to_csv(worksheet);
+            fullText += sheetText + '\n';
+          });
+        } else if (mime.startsWith('text/')) {
+          const textContent = response.data.toString('utf8');
+          fullText += textContent + '\n';
+        } else if (mime.startsWith('image/')) {
+          console.log(`Elaborazione OCR per immagine: ${doc.file_url}`);
+          const {
+            data: { text },
+          } = await Tesseract.recognize(response.data, 'eng');
+          fullText += text + '\n';
+        } else {
+          console.warn(`Tipo non supportato: ${mime}`);
+        }
+      }
+      return fullText;
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
   }
 };
