@@ -19,3 +19,7 @@
   background-color: rgb(26, 13, 43) !important;
   box-shadow: none !important;
 }
+
+.document:hover {
+  background-color: rgb(243, 241, 241);
+}

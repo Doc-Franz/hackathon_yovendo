@@ -1,22 +1,26 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Container, FloatingLabel, Form, Image, Row, Spinner } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { X } from "react-bootstrap-icons";
 
 function OrganizationsForm() {
   // fetch per aggiungere le aziende in piattaforma
-  async function addOrganization() {
+  const addOrganization = async ({ name, username, password }) => {
+    const fd = new FormData();
+    fd.append("name", name);
+    fd.append("username", username);
+    fd.append("password", password);
+    files.forEach((file) => fd.append("documents", file));
+
     try {
       await fetch("api/organizations", {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify(orgazinationRegistration)
+        body: fd
       });
     } catch (err) {
       console.log(err);
     }
-  }
+  };
 
   // stato che controlla i valori del form
   const [orgazinationRegistration, setOrgazinationRegistration] = useState({
@@ -24,6 +28,9 @@ function OrganizationsForm() {
     username: "",
     password: ""
   });
+
+  // stato che controlla i files caricatai
+  const [files, setFiles] = useState([]);
 
   //stato che controlla se tutti i valori del form sono stati compilati
   const [formCompleted, setFormCompleted] = useState(false);
@@ -33,7 +40,7 @@ function OrganizationsForm() {
     setFormCompleted(!!(name.trim() && username.trim() && password.trim()));
   }, [orgazinationRegistration]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     setOrgazinationRegistration({
@@ -42,8 +49,16 @@ function OrganizationsForm() {
       password: e.target.elements.passwordRegistration.value
     });
 
-    addOrganization();
+    const name = e.target.elements.nameRegistration.value;
+    const username = e.target.elements.usernameRegistration.value;
+    const password = e.target.elements.passwordRegistration.value;
+
+    await addOrganization({ name, username, password });
   };
+
+  useEffect(() => {
+    console.log(files);
+  }, [files]);
 
   return (
     <>
@@ -52,7 +67,7 @@ function OrganizationsForm() {
           <Row className="">
             <Col className="col-4 mt-2 mb-3" md={3} xl={2}>
               <Link to="/" className="text-decoration-none">
-                <Image fluid src />
+                <Image />
               </Link>
             </Col>
           </Row>
@@ -87,6 +102,7 @@ function OrganizationsForm() {
                     type="text"
                     value={orgazinationRegistration.username}
                     onChange={(e) => setOrgazinationRegistration({ ...orgazinationRegistration, username: e.target.value })} // all'onchange nel campo lo state è in ascolto e la proprietà viene aggiornata tramite value
+                    autoComplete="off"
                     placeholder="Username *"
                     required
                   />
@@ -105,9 +121,55 @@ function OrganizationsForm() {
                   />
                 </FloatingLabel>
 
+                {/* Caricamento dei files */}
+                <Form.Control
+                  className="no-focus"
+                  name="documents"
+                  type="file"
+                  multiple
+                  onChange={(e) => {
+                    setFiles((prevFiles) => [...prevFiles, ...Array.from(e.target.files)]);
+                  }}
+                  style={{ marginTop: "40px" }}
+                />
+
                 {/* <Form.Text>Minimo 3 caratteri, massimo 20 caratteri</Form.Text> */}
               </Form.Group>
-              <Button className="navigationBtn mb-3" type="submit" disabled={!formCompleted}>
+
+              {files.length > 0 && (
+                <>
+                  <Row>
+                    <Col>
+                      <p className="fs-5 fw-semibold text-primary-emphasis">Documenti selezionati:</p>
+                    </Col>
+                  </Row>
+                  <Row>
+                    {files.map((file, index) => (
+                      <Col className="document col-12" key={index}>
+                        <Row className="d-flex">
+                          <Col className="col-10">
+                            {" "}
+                            <p>📄 {file.name}</p>
+                          </Col>
+                          <Col className="d-flex justify-content-end">
+                            {" "}
+                            <X
+                              className="fs-4"
+                              //   mantengo tutti i file con indice diverso da quello selezionato
+                              onClick={() => {
+                                setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+                              }}
+                              style={{ cursor: "pointer" }}
+                            />
+                          </Col>
+                        </Row>
+                      </Col>
+                    ))}
+                  </Row>
+                </>
+              )}
+
+              <Button className="navigationBtn mt-3 mb-3" type="submit" disabled={!formCompleted}>
                 Registra
               </Button>
             </Form>
