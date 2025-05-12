@@ -8,6 +8,7 @@ const storage = new CloudinaryStorage({
   params: {
     folder: 'organization_docs',
     resource_type: 'auto',
+    type: 'upload',
   },
 });
 
