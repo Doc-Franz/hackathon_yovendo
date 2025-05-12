@@ -5,23 +5,8 @@ import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
 
 function MyNav() {
-  // fetch per aggiungere le aziende in piattaforma
-  async function addOrganization() {
-    try {
-      await fetch("api/organizations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ name: "new organization" })
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   return (
-    <Navbar expand="lg" className="bg-body-tertiary">
+    <Navbar expand="lg" className="bg-body-tertiary fixed-top">
       <Container>
         <Navbar.Brand href="#home">React-Bootstrap</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -29,7 +14,7 @@ function MyNav() {
           <Nav className="me-auto">
             <Nav.Link>Home</Nav.Link>
             <Nav.Link href="#link">Link</Nav.Link>
-            <Button onClick={addOrganization}>organization</Button>
+            <Button>organization</Button>
             <NavDropdown title="Dropdown" id="basic-nav-dropdown">
               <NavDropdown.Item href="#action/3.1">Action</NavDropdown.Item>
               <NavDropdown.Item href="#action/3.2">Another action</NavDropdown.Item>

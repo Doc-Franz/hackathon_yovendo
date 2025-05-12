@@ -1,0 +1,21 @@
+/* ------- FORM ------- */
+
+.no-focus:focus {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* Colore personalizzato dei bottoni */
+.navigationBtn {
+  background-color: rgb(26, 13, 43);
+  border: 0px;
+}
+
+.navigationBtn:hover {
+  background-color: #568fcf;
+}
+
+.navigationBtn:active {
+  background-color: rgb(26, 13, 43) !important;
+  box-shadow: none !important;
+}
