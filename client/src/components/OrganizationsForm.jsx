@@ -146,11 +146,8 @@ function OrganizationsForm() {
                   <Row>
                     {files.map((file, index) => (
                       <Col className="document col-12" key={index}>
-                        <Row className="d-flex">
-                          <Col className="col-10">
-                            {" "}
-                            <p>📄 {file.name}</p>
-                          </Col>
+                        <Row className="d-flex align-items-center">
+                          <Col className="col-10"> 📄 {file.name}</Col>
                           <Col className="d-flex justify-content-end">
                             {" "}
                             <X

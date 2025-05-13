@@ -7,8 +7,8 @@ const storage = new CloudinaryStorage({
   cloudinary,
   params: {
     folder: 'organization_docs',
-    resource_type: 'auto',
-    type: 'upload',
+    resource_type: 'raw',
+    access_mode: 'public',
   },
 });
 
