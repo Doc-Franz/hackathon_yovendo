@@ -1,51 +1,20 @@
-const fs = require('fs');
 const organizationsController = require('./organizationsController');
 const qdrant = require('./../utils/qdrant');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
-const fs = require('fs');
-
-// Ricezione di un messaggio ogni volta che viene effettuata una GET a /sendMessage
-exports.sendMessage = (req, res) => {
-  const accountSid = process.env.TWILIO_ACCOUNT_SID;
-  const authToken = process.env.TWILIO_AUTH_TOKEN;
-  const client = require('twilio')(accountSid, authToken);
-  const whatsappBody = JSON.parse(
-    fs.readFileSync(`${__dirname}/whatsapp.json`, 'utf-8', (err) => {
-      if (err) {
-        console.log(err.message);
-      }
-    }),
-  );
-
-  console.log(whatsappBody.message);
-
-  client.messages
-    .create({
-      body: whatsappBody.message.candidates[0].content.parts[0].text,
-      from: 'whatsapp:+14155238886',
-      to: 'whatsapp:+393460815974',
-    })
-    .then((message) => console.log(message.sid));
-
-  res.send('Message has been sent');
-};
+const { VertexAI } = require('@google-cloud/vertexai');
 
 // funzione di risposta al messaggio ricevuto dall'utente
-exports.messageFromOrganization = async (req, res) => {
-  // messaggio inviato dall'utente
-  const { message } = req.body;
-
+const messageFromOrganization = async (userMessage, sender, res) => {
   // Identificazione dell'azienda
   const org_id = 97;
 
   // embedding del messaggio ricevuto
   const queryEmbedding =
-    await organizationsController.getEmbeddedVectors(message);
+    await organizationsController.getEmbeddedVectors(userMessage);
 
   // query a Qdrant
   const searchResult = await qdrant.search('organization_docs', {
     vector: queryEmbedding,
-    limit: 5,
+    limit: 10,
     filter: {
       must: [
         {
@@ -56,21 +25,50 @@ exports.messageFromOrganization = async (req, res) => {
     },
   });
 
-  // const resultsss = await qdrant.scroll('organization_docs', {
-  //   limit: 1,
-  // });
-
-  // console.log(resultsss.points[0].payload);
-
-  // console.log(searchResult);
   const contextChunks = searchResult.map((hit) => hit.payload.chunk).join('\n');
 
   // prompt Gemini
-  const prompt = `Contesto:\n${contextChunks}\n\nDomanda:\n${message}`;
-  const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
-  const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-  const result = await model.generateContent(prompt);
-  const reply = await result.response.text();
+  const prompt = `Contesto:\n${contextChunks}\n\nDomanda:\n${userMessage}\n\nRispondi in massimo 200 parole.`;
+  const vertexAI = new VertexAI({
+    project: process.env.GOOGLE_CLOUD_PROJECT,
+    location: 'us-central1',
+  });
+
+  const generativeModel = vertexAI.getGenerativeModel({
+    model: 'gemini-2.0-flash-001',
+  });
+
+  const result = await generativeModel.generateContent(prompt);
+  const reply = await result.response.candidates[0].content.parts[0].text;
 
   console.log(reply);
+  sendNewMessage(reply);
+  res.send('Risposta inviata con successo');
+};
+
+// funzione di risposta dell'azienda
+const sendNewMessage = (reply) => {
+  const accountSid = process.env.TWILIO_ACCOUNT_SID;
+  const authToken = process.env.TWILIO_AUTH_TOKEN;
+  const client = require('twilio')(accountSid, authToken);
+
+  console.log(process.env.WHATSAPP_NUMBER);
+
+  client.messages
+    .create({
+      body: reply,
+      from: 'whatsapp:+14155238886',
+      to: process.env.WHATSAPP_NUMBER,
+    })
+    .then((message) => console.log(message.sid));
+};
+
+// funzione che riceve e salva il messaggio dall'utente
+exports.messageFromUser = async (req, res) => {
+  const userMessage = req.body.Body;
+  const sender = req.body.From;
+
+  // richiamo la funzione di risposta dell'azienda
+  console.log('Messaggio ricevuto: ', userMessage);
+  await messageFromOrganization(userMessage, sender, res);
 };

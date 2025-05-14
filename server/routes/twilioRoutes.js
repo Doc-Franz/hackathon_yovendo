@@ -3,7 +3,6 @@ const twilioController = require('./../controller/twilioController');
 
 const router = express.Router();
 
-// ❗❗❗ Da cambiare -> richieste di prova
-router.route('/').post(twilioController.messageFromOrganization);
+router.route('/whatsapp-webhook').post(twilioController.messageFromUser);
 
 module.exports = router;

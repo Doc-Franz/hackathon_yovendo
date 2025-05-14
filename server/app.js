@@ -12,6 +12,7 @@ const organizationsRouter = require('./routes/organizationsRoutes');
 
 // MIDDLEWARES
 app.use(express.json()); // permette di analizzare le richieste in arrivo con JSON payload
+app.use(express.urlencoded({ extended: true }));
 
 // ROUTES
 app.use('/api/whatsapp', twilioRouter);
