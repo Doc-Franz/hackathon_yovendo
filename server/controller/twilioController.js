@@ -28,7 +28,7 @@ const messageFromOrganization = async (userMessage, sender, res) => {
   const contextChunks = searchResult.map((hit) => hit.payload.chunk).join('\n');
 
   // prompt Gemini
-  const prompt = `Contesto:\n${contextChunks}\n\nDomanda:\n${userMessage}\n\nRispondi in massimo 200 parole.`;
+  const prompt = `Contesto:\n${contextChunks}\n\nDomanda:\n${userMessage}\n\nRispondi in massimo 150 parole.`;
   const vertexAI = new VertexAI({
     project: process.env.GOOGLE_CLOUD_PROJECT,
     location: 'us-central1',
