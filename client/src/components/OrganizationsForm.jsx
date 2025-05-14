@@ -56,10 +56,6 @@ function OrganizationsForm() {
     await addOrganization({ name, username, password });
   };
 
-  useEffect(() => {
-    console.log(files);
-  }, [files]);
-
   return (
     <>
       <Container fluid className="headerLogin">

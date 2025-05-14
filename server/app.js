@@ -14,7 +14,7 @@ const organizationsRouter = require('./routes/organizationsRoutes');
 app.use(express.json()); // permette di analizzare le richieste in arrivo con JSON payload
 
 // ROUTES
-app.use('/api/twilio', twilioRouter);
+app.use('/api/whatsapp', twilioRouter);
 app.use('/api/vertex', vertexRouter);
 app.use('/api/organizations', organizationsRouter);
 

@@ -1,6 +1,6 @@
 const db = require('./../db');
 const upload = require('../utils/multer');
-// const qdrant = require('./../utils/qdrant');
+const qdrant = require('./../utils/qdrant');
 const axios = require('axios');
 const pdfParse = require('pdf-parse');
 const mammoth = require('mammoth');
@@ -9,16 +9,16 @@ const Tesseract = require('tesseract.js');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // funzione di embedidng (trascrizione in vettori numerici) dei testi
-async function getEmbeddedVectors(text) {
+exports.getEmbeddedVectors = async (text) => {
   const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 
   const model = genAI.getGenerativeModel({ model: 'text-embedding-004' });
 
   const result = await model.embedContent(text);
 
-  console.log(result.embedding.values);
+  // console.log(result.embedding.values);
   return result.embedding.values;
-}
+};
 
 // funzione per aggiungere una nuova compagnia con i relativi documenti
 exports.newOrganization = [
@@ -59,24 +59,24 @@ exports.newOrganization = [
         for (const chunk of chunks) {
           const embeddedChunk = await getEmbeddedVectors(chunk); // embedded del singolo chunl
           embeddedArray.push(embeddedChunk);
+
+          // caricamento degli embedding nella collection su Qdrant
+          await qdrant.upsert('organization_docs', {
+            points: [
+              {
+                id: Date.now() + Math.floor(Math.random() * 10000), // ID univoco per ogni chunk
+                vector: embeddedChunk,
+                payload: {
+                  organization_id: orgInfo.id,
+                  document_id: doc.id,
+                  chunk: chunk,
+                },
+              },
+            ],
+          });
         }
 
-        console.log(embeddedArray);
-
-        // caricamento degli embedding nella collection su Qdrant
-        // await qdrant.upsert('organization_docs', {
-        //   points: [
-        //     {
-        //       id: `${doc.id}-${Math.random()}`, // ID univoco per ogni chunk
-        //       vector: embeddedChunk,
-        //       payload: {
-        //         organization_id: orgInfo.id,
-        //         document_id: doc.id,
-        //         chunk: chunk,
-        //       },
-        //     },
-        //   ],
-        // });
+        // console.log(embeddedArray);
       }
 
       res.status(201).json({
@@ -85,7 +85,7 @@ exports.newOrganization = [
         documents: uploadedDocs,
       });
     } catch (error) {
-      console.log(error.message);
+      console.log('error: ', error.message);
       res.status(500).json({ error: error.message });
     }
   },
