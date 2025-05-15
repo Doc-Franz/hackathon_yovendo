@@ -32,7 +32,7 @@ function OrganizationsForm() {
   // controllo dello stato della registrazione
   const [isRegistered, setIsRegistered] = useState(false);
 
-  // stato che controlla i files caricatai
+  // stato che controlla i files caricati
   const [files, setFiles] = useState([]);
 
   //stato che controlla se tutti i valori del form sono stati compilati
@@ -169,32 +169,6 @@ function OrganizationsForm() {
               </Button>
               <Row>{isRegistered ? <Col className="text-success">Registrazione avvenuta con successo</Col> : null}</Row>
             </Form>
-
-            {/* spinner che gestisce la risposta alla registrazione */}
-            {/* {loginLoading ? (
-                <Row>
-                  <Col className="d-flex align-items-center">
-                    <Spinner animation="border" />
-                    <p className="ms-3">Tentativo di registrazione...</p>
-                  </Col>
-                </Row>
-              ) : hasSubmitted ? (
-                registrationFailed ? (
-                  <Row className="text-danger">
-                    <Col>Registrazione non andata a buon fine!</Col>
-                  </Row>
-                ) : (
-                  <Row className="d-flex flex-column text-success">
-                    <Col>Registrazione effettuata!</Col>
-                    <Col>
-                      <Link to="/reservedArea/login" style={{ color: "#568FCF" }}>
-                        <Image src={pointer} className="me-2" alt="thumb icon" style={{ width: "40px", height: "40px" }}></Image>
-                        Vai al login
-                      </Link>
-                    </Col>
-                  </Row>
-                )
-              ) : null} */}
           </Col>
         </Row>
       </Container>

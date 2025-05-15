@@ -57,7 +57,7 @@ exports.newOrganization = [
         const embeddedArray = []; // array con l'embedding di tutto il testo del documento
 
         for (const chunk of chunks) {
-          const embeddedChunk = await getEmbeddedVectors(chunk); // embedded del singolo chunl
+          const embeddedChunk = await this.getEmbeddedVectors(chunk); // embedded del singolo chunl
           embeddedArray.push(embeddedChunk);
 
           // caricamento degli embedding nella collection su Qdrant
@@ -183,5 +183,33 @@ exports.getAllOrganizations = async (req, res) => {
     res.status(200).json(organizations);
   } catch (err) {
     res.status(500).json({ error: err.message });
+  }
+};
+
+// GET per richiamare la singola azienda per username
+exports.getOrganizationByUsername = async (req, res) => {
+  const { username } = req.params;
+  try {
+    const organization = await db.one(
+      'SELECT * FROM organizations WHERE username = $1',
+      [username],
+    );
+    res.status(200).json({ organization });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
+
+// GET per richiamare i documenti di una singola azienda per id al caricamento della sua pagina
+exports.getOrganizationByID = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const organization = await db.any(
+      'SELECT * FROM organization_documents WHERE organization_id = $1',
+      [id],
+    );
+    res.status(200).json({ organization });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
   }
 };

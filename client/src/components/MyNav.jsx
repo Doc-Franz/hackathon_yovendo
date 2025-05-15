@@ -27,8 +27,9 @@ function MyNav() {
               </Link>
 
               <NavDropdown title="Accedi" id="basic-nav-dropdown" style={{ marginInlineStart: "40px" }}>
-                <NavDropdown.Item>Login</NavDropdown.Item>
-                <NavDropdown.Item>Documenti</NavDropdown.Item>
+                <NavDropdown.Item as={Link} to={`/login`}>
+                  Login
+                </NavDropdown.Item>
                 <NavDropdown.Item>Profilo</NavDropdown.Item>
                 <NavDropdown.Divider />
                 <NavDropdown.Item>Esci</NavDropdown.Item>
