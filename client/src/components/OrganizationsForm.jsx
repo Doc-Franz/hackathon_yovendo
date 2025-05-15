@@ -29,6 +29,9 @@ function OrganizationsForm() {
     password: ""
   });
 
+  // controllo dello stato della registrazione
+  const [isRegistered, setIsRegistered] = useState(false);
+
   // stato che controlla i files caricatai
   const [files, setFiles] = useState([]);
 
@@ -54,6 +57,16 @@ function OrganizationsForm() {
     const password = e.target.elements.passwordRegistration.value;
 
     await addOrganization({ name, username, password });
+
+    // reset del form
+    setTimeout(() => {
+      setIsRegistered(true);
+      setOrgazinationRegistration({
+        name: "",
+        username: "",
+        password: ""
+      });
+    }, 300);
   };
 
   return (
@@ -154,6 +167,7 @@ function OrganizationsForm() {
               <Button className="navigationBtn mt-3 mb-3" type="submit" disabled={!formCompleted}>
                 Registra
               </Button>
+              <Row>{isRegistered ? <Col className="text-success">Registrazione avvenuta con successo</Col> : null}</Row>
             </Form>
 
             {/* spinner che gestisce la risposta alla registrazione */}
