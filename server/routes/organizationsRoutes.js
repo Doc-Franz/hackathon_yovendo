@@ -6,8 +6,8 @@ const router = express.Router();
 // aggiunta di una nuova compagnia
 router.route('/').post(organizationsController.newOrganization);
 
-// GET dei documenti associati ad una compagnia con organization_id
-// router.route('/:organization_id').get(organizationsController.getDocuments);
+// GET di tutte le organizzazioni
+router.route('/').get(organizationsController.getAllOrganizations);
 
 // eliminazione di un documento con id associato ad una compagnia
 router.route('/:id').delete(organizationsController.deleteDocument);

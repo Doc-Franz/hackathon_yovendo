@@ -23,3 +23,9 @@
 .document:hover {
   background-color: rgb(243, 241, 241);
 }
+
+/* ------- NAVBAR ------- */
+
+.linkButton:hover {
+  color: #568fcf !important;
+}

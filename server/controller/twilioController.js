@@ -1,11 +1,14 @@
 const organizationsController = require('./organizationsController');
+const db = require('./../db');
 const qdrant = require('./../utils/qdrant');
 const { VertexAI } = require('@google-cloud/vertexai');
+
+let organization_id = null; // inizializzazione dell'id dell'azienda selezionata
 
 // funzione di risposta al messaggio ricevuto dall'utente
 const messageFromOrganization = async (userMessage, sender, res) => {
   // Identificazione dell'azienda
-  const org_id = 97;
+  // const org_id = 97;
 
   // embedding del messaggio ricevuto
   const queryEmbedding =
@@ -19,7 +22,7 @@ const messageFromOrganization = async (userMessage, sender, res) => {
       must: [
         {
           key: 'organization_id',
-          match: { value: org_id },
+          match: { value: organization_id },
         },
       ],
     },
@@ -39,9 +42,9 @@ const messageFromOrganization = async (userMessage, sender, res) => {
   });
 
   const result = await generativeModel.generateContent(prompt);
-  const reply = await result.response.candidates[0].content.parts[0].text;
+  const reply = result.response.candidates[0].content.parts[0].text;
 
-  console.log(reply);
+  // console.log(reply);
   sendNewMessage(reply);
   res.send('Risposta inviata con successo');
 };
@@ -52,7 +55,7 @@ const sendNewMessage = (reply) => {
   const authToken = process.env.TWILIO_AUTH_TOKEN;
   const client = require('twilio')(accountSid, authToken);
 
-  console.log(process.env.WHATSAPP_NUMBER);
+  // console.log(process.env.WHATSAPP_NUMBER);
 
   client.messages
     .create({
@@ -63,12 +66,29 @@ const sendNewMessage = (reply) => {
     .then((message) => console.log(message.sid));
 };
 
+// quando clicco su 'contattaci' nel frontend viene registrato l'id dell'azienda
+exports.getOrganization = async (req, res) => {
+  const { id } = req.params; // recupero l'id dell'azienda dai parametri dell'URL
+  try {
+    const organization = await db.one(
+      'SELECT * FROM organizations WHERE id = $1',
+      [id],
+    );
+    organization_id = organization.id;
+    console.log(`L'azienda con id ${organization_id} è stata trovata`);
+    res.status(200).json({ organization });
+  } catch (err) {
+    console.log(err.message);
+    res.status(500).json({ message: err.message });
+  }
+};
+
 // funzione che riceve e salva il messaggio dall'utente
 exports.messageFromUser = async (req, res) => {
   const userMessage = req.body.Body;
   const sender = req.body.From;
 
   // richiamo la funzione di risposta dell'azienda
-  console.log('Messaggio ricevuto: ', userMessage);
+  // console.log('Messaggio ricevuto: ', userMessage);
   await messageFromOrganization(userMessage, sender, res);
 };

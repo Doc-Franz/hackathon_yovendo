@@ -58,20 +58,9 @@ function OrganizationsForm() {
 
   return (
     <>
-      <Container fluid className="headerLogin">
-        <Container>
-          <Row className="">
-            <Col className="col-4 mt-2 mb-3" md={3} xl={2}>
-              <Link to="/" className="text-decoration-none">
-                <Image />
-              </Link>
-            </Col>
-          </Row>
-        </Container>
-      </Container>
       <Container>
         <Row style={{ marginTop: "50px" }}>
-          <Col md={6}>
+          <Col>
             <Form onSubmit={handleSubmit}>
               <Form.Group className="mb-3">
                 <Row>

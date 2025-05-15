@@ -75,8 +75,6 @@ exports.newOrganization = [
             ],
           });
         }
-
-        // console.log(embeddedArray);
       }
 
       res.status(201).json({
@@ -176,4 +174,14 @@ const splitText = (text, maxToken = 512, overlap = 50) => {
   }
 
   return chunks;
+};
+
+// GET per richiamare tutte le aziente
+exports.getAllOrganizations = async (req, res) => {
+  try {
+    const organizations = await db.any('SELECT * FROM organizations');
+    res.status(200).json(organizations);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
 };
