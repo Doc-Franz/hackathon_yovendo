@@ -50,7 +50,7 @@ cd tuo-progetto
 ### 2. Avvia il frontend
 
 ```bash
-cd frontend
+cd client
 npm install
 npm run dev
 ```
@@ -58,7 +58,7 @@ npm run dev
 ### 3. Avvia il backend
 
 ```bash
-cd backend
+cd server
 npm install
 npm start
 ```
