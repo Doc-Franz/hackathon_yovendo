@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Button, Col, Container, FloatingLabel, Form, Image, Row, Spinner } from "react-bootstrap";
+import { Alert, Button, Col, Container, FloatingLabel, Form, Image, Row, Spinner } from "react-bootstrap";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { GET_USER_ID, getUserID } from "../redux/actions/loginActions";
@@ -21,9 +21,11 @@ function Login() {
         }, 500);
       } else {
         console.log("error");
+        setShowAlert(true);
       }
     } catch (err) {
       console.log(err);
+      setShowAlert(true);
     }
   };
 
@@ -35,6 +37,9 @@ function Login() {
 
   //stato che controlla se tutti i valori del form sono stati compilati
   const [formCompleted, setFormCompleted] = useState(false);
+
+  // stato che controlla se mostrare o meno l'alert di credenziali errate
+  const [showAlert, setShowAlert] = useState(false);
 
   useEffect(() => {
     const { username, password } = orgazinationLogin;
@@ -103,6 +108,11 @@ function Login() {
             <Button className="navigationBtn mt-3 mb-3" type="submit" disabled={!formCompleted}>
               Accedi
             </Button>
+            {showAlert ? (
+              <Alert key="danger" variant="danger" className="mt-4">
+                Credenziali errate!
+              </Alert>
+            ) : null}
           </Form>
         </Col>
       </Row>

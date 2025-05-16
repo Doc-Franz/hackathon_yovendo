@@ -14,10 +14,10 @@ router
   .route('/:username')
   .get(organizationsController.getOrganizationByUsername);
 
-// GET dei documenti di una singola organizzazione da id
-router.route('/documents/:id').get(organizationsController.getOrganizationByID);
-
-// eliminazione di un documento con id associato ad una compagnia
-router.route('/:id').delete(organizationsController.deleteDocument);
+// GET e DELETE dei documenti di una singola organizzazione da id
+router
+  .route('/documents/:id')
+  .get(organizationsController.getOrganizationByID)
+  .delete(organizationsController.deleteDocument);
 
 module.exports = router;

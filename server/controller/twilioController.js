@@ -7,9 +7,6 @@ let organization_id = null; // inizializzazione dell'id dell'azienda selezionata
 
 // funzione di risposta al messaggio ricevuto dall'utente
 const messageFromOrganization = async (userMessage, sender, res) => {
-  // Identificazione dell'azienda
-  // const org_id = 97;
-
   // embedding del messaggio ricevuto
   const queryEmbedding =
     await organizationsController.getEmbeddedVectors(userMessage);
@@ -89,6 +86,5 @@ exports.messageFromUser = async (req, res) => {
   const sender = req.body.From;
 
   // richiamo la funzione di risposta dell'azienda
-  // console.log('Messaggio ricevuto: ', userMessage);
   await messageFromOrganization(userMessage, sender, res);
 };

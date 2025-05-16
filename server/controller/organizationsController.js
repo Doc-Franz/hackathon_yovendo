@@ -89,16 +89,30 @@ exports.newOrganization = [
   },
 ];
 
-// funzione per eliminare i documenti di una compagnia
+// ❗❗❗funzione per eliminare i documenti di una compagnia --> da sistemare
 exports.deleteDocument = async (req, res) => {
   const { id } = req.params; // recupero l'id del documento da eliminare dall'URL
   console.log(id);
 
   try {
-    const deleted = await db.result(
-      `DELETE FROM organization_documents WHERE id = $1`,
-      [id],
-    );
+    // const deleted = await db.result(
+    //   `DELETE FROM organization_documents WHERE id = $1`,
+    //   [id],
+    // );
+
+    // Elimina i vettori associati da Qdrant
+    await qdrant.delete('organization_docs', {
+      filter: {
+        must: [
+          {
+            key: 'document_id',
+            match: {
+              value: id,
+            },
+          },
+        ],
+      },
+    });
 
     if (deleted.rowCount == 0) {
       res.status(400).json({ message: 'Documento non trovato' });

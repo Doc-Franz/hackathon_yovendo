@@ -14,7 +14,7 @@ function MyNav() {
   const navigate = useNavigate();
 
   return (
-    <Navbar expand="lg" className="bg-white fixed-top">
+    <Navbar expand="lg" className="bg-light fixed-top">
       <Container>
         <Navbar.Brand>
           <Link to="/" className="text-decoration-none text-dark">

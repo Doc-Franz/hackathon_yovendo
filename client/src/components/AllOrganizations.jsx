@@ -33,8 +33,8 @@ function AllOrganizations() {
   }, []);
 
   return (
-    <Container style={{ marginTop: "50px" }}>
-      <Row>
+    <Container>
+      <Row style={{ marginTop: "50px" }}>
         <Col className="fs-3 fw-semibold text-primary-emphasis">Aziende registrate:</Col>
       </Row>
       {orgs.length > 0
