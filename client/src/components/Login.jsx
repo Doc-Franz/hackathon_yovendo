@@ -1,9 +1,12 @@
 import { useEffect, useState } from "react";
 import { Button, Col, Container, FloatingLabel, Form, Image, Row, Spinner } from "react-bootstrap";
+import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
+import { GET_USER_ID, getUserID } from "../redux/actions/loginActions";
 
 function Login() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // funzione di login
   const checkUserLogin = async (username) => {
@@ -11,6 +14,8 @@ function Login() {
       const response = await fetch(`/api/organizations/${username}`);
       if (response.ok) {
         const organization = await response.json();
+        // viene salvato l'id dell'organizzazione nello store
+        dispatch(getUserID(organization.organization.id));
         setTimeout(() => {
           navigate(`/organization/${organization.organization.id}`);
         }, 500);

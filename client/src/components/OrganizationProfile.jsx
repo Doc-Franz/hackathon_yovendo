@@ -1,17 +1,17 @@
 import { useEffect, useState } from "react";
 import { Col, Container, Row } from "react-bootstrap";
 import { X } from "react-bootstrap-icons";
-import { useParams } from "react-router-dom";
+import { useSelector } from "react-redux";
 
 function OrganizationProfile() {
-  const { id } = useParams(); // recupero l'id dell'azienda
+  const organization_id = useSelector((state) => state.login.id); // recupero l'id del'azienda dallo store
 
   const [documents, setDocuments] = useState([]);
 
   // fetch per caricare i documenti dell'azienda
-  const getDocuments = async (id) => {
+  const getDocuments = async (organization_id) => {
     try {
-      const response = await fetch(`/api/organizations/documents/${id}`);
+      const response = await fetch(`/api/organizations/documents/${organization_id}`);
       if (response.ok) {
         const data = await response.json();
         setDocuments(data.organization);
@@ -24,8 +24,8 @@ function OrganizationProfile() {
   };
 
   useEffect(() => {
-    getDocuments(id);
-  }, [id]);
+    getDocuments(organization_id);
+  }, [organization_id]);
 
   return (
     <Container style={{ marginTop: "50px" }}>

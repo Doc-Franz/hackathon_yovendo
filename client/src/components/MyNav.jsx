@@ -3,10 +3,16 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import NavDropdown from "react-bootstrap/NavDropdown";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/images/logo.png";
+import { useDispatch, useSelector } from "react-redux";
+import { RESET_LOGIN, resetLogin } from "../redux/actions/loginActions";
 
 function MyNav() {
+  const organization_id = useSelector((state) => state.login.id); // recupero l'id del'azienda dallo store
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   return (
     <Navbar expand="lg" className="bg-white fixed-top">
       <Container>
@@ -30,9 +36,25 @@ function MyNav() {
                 <NavDropdown.Item as={Link} to={`/login`}>
                   Login
                 </NavDropdown.Item>
-                <NavDropdown.Item>Profilo</NavDropdown.Item>
+                {organization_id ? (
+                  <NavDropdown.Item as={Link} to={`/organization/${organization_id}`}>
+                    Profilo
+                  </NavDropdown.Item>
+                ) : (
+                  <NavDropdown.Item>Profilo</NavDropdown.Item>
+                )}
+
                 <NavDropdown.Divider />
-                <NavDropdown.Item>Esci</NavDropdown.Item>
+                <NavDropdown.Item
+                  onClick={() => {
+                    dispatch(resetLogin());
+                    setTimeout(() => {
+                      navigate("/allOrganizations");
+                    }, 500);
+                  }}
+                >
+                  Esci
+                </NavDropdown.Item>
               </NavDropdown>
             </Nav>
           </Navbar.Collapse>
