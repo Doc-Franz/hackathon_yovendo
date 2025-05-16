@@ -7,7 +7,7 @@ Implementazione di un chatbot per Whatsapp attraverso una piattaforma messa a di
 1. **Ricezione messaggio su WhatsApp**  
    Utilizza Twilio per ricevere messaggi inviati dagli utenti tramite WhatsApp.
 
-2. **Identificazione azienda (`organization_Id`)**  
+2. **Identificazione azienda (`organization_id`)**  
    Il sistema identifica automaticamente l'organizzazione.
 
 3. **Creazione embedding del messaggio**  
