@@ -81,6 +81,20 @@ Salva il dominio HTTPS generato da Ngrok (es: https://mydomain.ngrok-free.app).
    ```
 4. Modifica nel codice backend la variabile globale WHATSAPP_NUMBER con il numero WhatsApp associato alla sandbox Twilio.
 
+## 🧩 Configurazione Qdrant
+### 1. Registrazione
+Registrati su Qdrant Cloud e crea un nuovo cluster. Dopo la creazione, accedi alla dashboard e recupera:
+- #### API Key
+- #### URL del cluster
+
+### 2. Configura .env
+Nel file .env del backend, aggiungi o modifica le seguenti variabili:
+
+```bash
+QDRANT_API_KEY=la_tua_api_key
+QDRANT_URL=https://nome-cluster.qdrant.cloud
+```
+
 ## 📌 Note
 - Verifica che le credenziali per Vertex AI e Qdrant siano configurate correttamente nei rispettivi file di ambiente .env.
 - Per un'esperienza stabile in produzione, considera di sostituire Ngrok con un dominio pubblico permanente.
